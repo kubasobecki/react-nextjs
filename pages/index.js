@@ -22,7 +22,7 @@ const HomePage = props => {
     return <MeetupList meetups={props.meetups} />;
 };
 
-export async function getStaticProps() {
+export async function getStaticProps(context) {
     // fetch data from API
     return {
         props: {
