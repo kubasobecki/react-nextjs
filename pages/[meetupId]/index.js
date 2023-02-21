@@ -1,7 +1,5 @@
-import React from 'react';
+import MeetupDetail from '../../components/meetups/MeetupDetail';
 
-const Meetup = () => {
-    return <div>Meetup</div>;
-};
-
-export default Meetup;
+export default function Meetup(props) {
+    return <MeetupDetail {...props} />;
+}
