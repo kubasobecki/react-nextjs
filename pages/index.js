@@ -2,9 +2,21 @@ import React from 'react';
 import MeetupList from '../components/meetups/MeetupList';
 import { MongoClient } from 'mongodb';
 import { MONGO_USER, MONGO_PASSWORD } from '../env';
+import Head from 'next/head';
 
 const HomePage = props => {
-    return <MeetupList meetups={props.meetups} />;
+    return (
+        <>
+            <Head>
+                <title>Next JS Meetups</title>
+                <meta
+                    name="description"
+                    content="Browse a huge list of NextJS meetups!"
+                />
+            </Head>
+            <MeetupList meetups={props.meetups} />;
+        </>
+    );
 };
 
 export async function getStaticProps(context) {
@@ -27,16 +39,5 @@ export async function getStaticProps(context) {
         revalidate: 10
     };
 }
-
-// export async function getServerSideProps(context) {
-//     const request = context.req;
-//     const response = context.res;
-
-//     return {
-//         props: {
-//             meetups: DUMMY_MEETUPS
-//         }
-//     };
-// }
 
 export default HomePage;

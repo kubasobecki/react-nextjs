@@ -1,14 +1,22 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { MONGO_USER, MONGO_PASSWORD } from '../../env';
 import MeetupDetail from '../../components/meetups/MeetupDetail';
+import Head from 'next/head';
 
 export default function Meetup(props) {
-    return <MeetupDetail {...props.meetupData} />;
+    return (
+        <>
+            <Head>
+                <title>{props.meetupData.title}</title>
+                <meta
+                    name="description"
+                    content={props.meetupData.description}
+                />
+            </Head>
+            <MeetupDetail {...props.meetupData} />
+        </>
+    );
 }
-
-const getMeetupFromDB = async query => {
-    //
-};
 
 export async function getStaticProps(context) {
     const meetupId = context.params.meetupId;
