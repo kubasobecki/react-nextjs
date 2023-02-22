@@ -1,40 +1,54 @@
+import { MongoClient, ObjectId } from 'mongodb';
+import { MONGO_USER, MONGO_PASSWORD } from '../../env';
 import MeetupDetail from '../../components/meetups/MeetupDetail';
 
 export default function Meetup(props) {
     return <MeetupDetail {...props.meetupData} />;
 }
 
+const getMeetupFromDB = async query => {
+    //
+};
+
 export async function getStaticProps(context) {
     const meetupId = context.params.meetupId;
+
+    const client = await MongoClient.connect(
+        `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@nextjs-test.fwerjip.mongodb.net/meetups?retryWrites=true&w=majority`
+    );
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups');
+    const selectedMeetup = await meetupsCollection.findOne({
+        _id: new ObjectId(meetupId)
+    });
+    client.close();
 
     return {
         props: {
             meetupData: {
-                id: meetupId,
-                title: 'First meetup',
-                image: 'https://images.unsplash.com/photo-1493134799591-2c9eed26201a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-                address: 'Poznań',
-                description: 'This is a first meetup'
+                id: selectedMeetup._id.toString(),
+                ...selectedMeetup.data
             }
         },
-        revalidate: 60 * 60 * 24
+        revalidate: 1
     };
 }
 
 export async function getStaticPaths() {
+    const client = await MongoClient.connect(
+        `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@nextjs-test.fwerjip.mongodb.net/meetups?retryWrites=true&w=majority`
+    );
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups');
+    const meetups = await meetupsCollection.find({}, { _id: 1 }).toArray();
+    client.close();
+
+    const paths = meetups.map(meetup => ({
+        params: { meetupId: meetup._id.toString() }
+    }));
+
     return {
         fallback: false,
-        paths: [
-            {
-                params: {
-                    meetupId: 'm1'
-                }
-            },
-            {
-                params: {
-                    meetupId: 'm2'
-                }
-            }
-        ]
+        paths
     };
 }
